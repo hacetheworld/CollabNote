@@ -38,17 +38,20 @@ API.interceptors.response.use(
         isRefreshing = true;
         try {
           const res = await axios.get(
-            "http://localhost:5000/api/auth/refresh-token",
+            "http://localhost:5000/api/auth/refresh",
             { withCredentials: true }
           );
 
           const newToken = res.data.accessToken;
           localStorage.setItem("accessToken", newToken);
           isRefreshing = false;
-          console.log("Aces token expired getting new one");
+          console.log("Access token expired getting new one");
+          console.log(subscribers, "subscribers");
 
           onTokenRefreshed(newToken);
         } catch (err) {
+          console.log(err, "errrr");
+
           isRefreshing = false;
           localStorage.removeItem("accessToken");
           window.location.href = "/login";
@@ -59,6 +62,7 @@ API.interceptors.response.use(
       return new Promise((resolve) => {
         addSubscriber((newToken) => {
           original.headers.Authorization = `Bearer ${newToken}`;
+
           resolve(API(original));
         });
       });
@@ -74,3 +78,9 @@ export default API;
 export const loginApi = (data) => API.post("/auth/login", data);
 export const signupApi = (data) => API.post("/auth/signup", data);
 export const getMe = () => API.get("/auth/me");
+export const getDocuments = () => API.get("/documents");
+export const createDocument = (data) => API.post("/documents", data);
+export const getDocumentById = (id) => API.get(`/documents/${id}`);
+export const deleteDocumentById = (id) => API.delete(`/documents/${id}`);
+export const sendInviteApi = (data) => API.post("/invite", data);
+export const acceptInviteApi = (token) => API.get(`/invite/accept/${token}`);

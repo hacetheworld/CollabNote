@@ -21,7 +21,7 @@ export default function AuthSuccess() {
           const userProfile = response.user;
 
           loginWithGoogle(token, userProfile);
-          navigate("/");
+          navigate("/docs");
         } catch (error) {
           console.error(
             "Secure login completion failed (Profile fetch failed or token invalid):",

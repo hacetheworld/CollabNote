@@ -1,0 +1,224 @@
+/* --- Global & Base Styles --- */
+.landing-page-wrapper {
+  font-family: "Inter", sans-serif; /* Use the defined font stack */
+  color: #3c4043; /* Dark Charcoal text */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Header/Navigation --- */
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 5%;
+  border-bottom: 1px solid #dadce0;
+  background-color: #ffffff;
+}
+
+.app-logo {
+  font-weight: 700;
+  color: #004e64; /* Deep Teal for the main brand */
+  font-size: 24px;
+}
+
+.landing-nav {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-login-btn {
+  text-decoration: none;
+  color: #004e64;
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.nav-login-btn:hover {
+  background-color: #f8f9fa;
+}
+
+.nav-signup-btn {
+  text-decoration: none;
+  background-color: #00a7e1; /* Vibrant Cyan/Blue CTA */
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px; /* Pill shape */
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.nav-signup-btn:hover {
+  background-color: #008cc3;
+}
+
+/* --- Hero Section --- */
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 5% 60px;
+  text-align: center;
+  background-color: #ffffff;
+  flex-grow: 1; /* Ensures it takes up space */
+}
+
+.hero-content {
+  max-width: 800px;
+  margin-bottom: 40px;
+}
+
+.hero-headline {
+  font-size: 3.5rem; /* Large and impactful */
+  font-weight: 800;
+  color: #004e64;
+  margin-bottom: 15px;
+  line-height: 1.1;
+}
+
+.hero-subtext {
+  font-size: 1.3rem;
+  color: #5f6368;
+  margin-bottom: 30px;
+}
+
+.hero-cta-group {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.cta-button {
+  text-decoration: none;
+  padding: 14px 30px;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.cta-primary {
+  background-color: #00a7e1; /* Vibrant Cyan/Blue */
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 167, 225, 0.4);
+}
+
+.cta-primary:hover {
+  background-color: #008cc3;
+  transform: translateY(-2px);
+}
+
+.cta-secondary {
+  background-color: #ffffff;
+  color: #004e64;
+  border: 2px solid #004e64;
+}
+
+.cta-secondary:hover {
+  background-color: #f1f3f4;
+}
+
+.hero-image-container {
+  width: 90%;
+  max-width: 900px;
+  margin-top: 40px;
+  /* Placeholder for the actual image styling */
+  height: 400px;
+  background-color: #f1f3f4;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 78, 100, 0.1);
+}
+
+/* --- Features Section --- */
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 60px 5%;
+  background-color: #f8f9fa; /* Subtle grey background */
+  border-top: 1px solid #e0e0e0;
+}
+
+.feature-card {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+
+.feature-title {
+  font-size: 1.25rem;
+  color: #004e64;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.feature-text {
+  color: #70757a;
+}
+
+/* --- Footer --- */
+.landing-footer {
+  padding: 20px 5%;
+  background-color: #3c4043;
+  color: #bcc0c4;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.landing-footer .footer-links a {
+  color: #bcc0c4;
+  margin-left: 15px;
+  text-decoration: none;
+}
+
+.landing-footer .footer-links a:hover {
+  color: white;
+}
+
+/* --- Responsiveness --- */
+@media (max-width: 768px) {
+  .hero-headline {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtext {
+    font-size: 1.1rem;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px; /* Constrain buttons on small screens */
+  }
+
+  .cta-button {
+    padding: 12px 20px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .landing-header {
+    padding: 15px 4%;
+  }
+
+  .landing-nav {
+    gap: 5px;
+  }
+
+  .landing-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+}

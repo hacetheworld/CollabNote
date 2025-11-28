@@ -1,4 +1,4 @@
-import { authService } from "../services/authService.js";
+import { authService } from "../services/auth.service.js";
 
 export const authController = {
   signup: async (req, res) => {
@@ -28,7 +28,7 @@ export const authController = {
       res.cookie("refreshToken", data.refreshToken, {
         httpOnly: true,
         secure: false,
-        sameSite: "lax",
+        sameSite: "None",
       });
 
       return res.json({
@@ -60,12 +60,15 @@ export const authController = {
   },
   refresh: async (req, res) => {
     try {
+      console.log(req.cookies, "req.cookiesreq.cookies");
       const { refreshToken } = req.cookies;
 
       const data = await authService.refresh(refreshToken);
 
       res.json({ accessToken: data.accessToken });
     } catch (err) {
+      console.log(err, "errroo refresh");
+
       res.status(401).json({ error: err.message });
     }
   },

@@ -1,6 +1,6 @@
 import passport from "passport";
 import GoogleStrategy from "passport-google-oauth20";
-import { authService } from "../services/authService.js";
+import { authService } from "../services/auth.service.js";
 
 const passportConfig = () => {
   passport.use(

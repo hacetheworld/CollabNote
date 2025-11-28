@@ -1,0 +1,106 @@
+/* --- APP HEADER STYLES (Used by Docs and Editor Pages) --- */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 24px;
+  border-bottom: 1px solid #dadce0;
+  background-color: #ffffff;
+  height: 60px;
+}
+
+/* Ensure the Editor header has the correct sticky context */
+.editor-mode {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.header-left-section {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.app-logo {
+  font-weight: 800;
+  color: #004e64; /* Deep Teal */
+  font-size: 22px;
+  text-decoration: none;
+}
+
+/* Page title is used in the Docs page next to the logo */
+.page-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: #3c4043;
+  margin: 0;
+}
+
+.header-right-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-name-display {
+  font-size: 14px;
+  color: #5f6368;
+  /* Hide name on small screens */
+  display: none;
+}
+@media (min-width: 600px) {
+  .user-name-display {
+    display: block;
+  }
+}
+
+.user-avatar-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.user-avatar-btn:hover {
+  background-color: #e8eaed;
+}
+
+.user-avatar-lg {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Avatar Dropdown Menu (Reuse styling from Docs page) */
+.avatar-dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #dadce0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  width: 150px;
+  z-index: 60;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #3c4043;
+}
+
+.menu-item:hover {
+  background-color: #f1f3f4;
+}

@@ -1,0 +1,22 @@
+/* --- APP FOOTER STYLES (Used by all pages) --- */
+.app-footer {
+  padding: 15px 24px;
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  color: #5f6368;
+  font-size: 0.85rem;
+  text-align: center;
+  width: 100%;
+  margin-top: auto; /* Pushes footer to the bottom */
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.developer-credit {
+  font-weight: 500;
+  color: #004e64; /* Highlight your name with the Teal color */
+  margin-top: 5px;
+}

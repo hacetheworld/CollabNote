@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/User.model.js";
 import Token from "../models/Token.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -7,7 +7,7 @@ const createAccessToken = (user) => {
   return jwt.sign(
     { id: user._id, email: user.email },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "1m" }
+    { expiresIn: "15m" }
   );
 };
 
@@ -91,7 +91,6 @@ export const authService = {
 
   googleLogin: async ({ googleId, email, name, picture }) => {
     let user = await User.findOne({ email });
-
     if (!user) {
       user = await User.create({
         googleId,

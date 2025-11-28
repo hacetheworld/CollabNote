@@ -1,17 +1,31 @@
 import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { AuthContext, useAuth } from "../context/AuthContext";
+// Import `useLocation` to read the query parameters
+import { useNavigate, useLocation, NavLink } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  // Use useLocation to get the current URL details
+  const location = useLocation();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     await login(email, password);
-    navigate("/");
+    // --- 💡 Logic for Post-Login Redirection ---
+    // 1. Get the `redirect` parameter from the URL's query string
+    const params = new URLSearchParams(location.search);
+    const redirectPath = params.get("redirect");
+
+    // 2. Navigate to the stored path, or default to /docs
+    if (redirectPath) {
+      navigate(redirectPath);
+    } else {
+      navigate("/docs");
+    }
+    // ------------------------------------------
   };
 
   return (
@@ -33,6 +47,7 @@ export default function Login() {
       <a href="http://localhost:5000/api/auth/google">
         <button>Login with Google</button>
       </a>
+      <NavLink to="/signup">Signup</NavLink>
     </div>
   );
 }
