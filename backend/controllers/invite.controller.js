@@ -1,9 +1,11 @@
 import InviteService from "../services/invite.service.js";
+import { logger } from "../utils/winstonLogger.js";
 
 class InviteController {
   // SEND AN INVITE
   static async sendInvite(req, res, next) {
     try {
+      const cid = req.cid;
       const { documentId, email, permissions } = req.body;
       const inviterUserId = req.userId;
 
@@ -11,8 +13,14 @@ class InviteController {
         documentId,
         inviterUserId,
         email,
-        permissions
+        permissions,
+        cid
       );
+      logger.info({
+        message: "User profile fetched and response sent.",
+        inviterUserId,
+        cid,
+      });
 
       res.status(201).json({
         success: true,
@@ -25,13 +33,18 @@ class InviteController {
   }
 
   // ACCEPT INVITE
-  static async acceptInvite(req, res, next) {
+  static async acceptInvite(req, res, next, cid) {
     try {
+      const cid = req.cid;
       const token = req.params.token;
       const userId = req.userId;
 
-      const invite = await InviteService.acceptInvite(token, userId);
-
+      const invite = await InviteService.acceptInvite(token, userId, cid);
+      logger.info({
+        message: "Accept Invite response sent.",
+        userId,
+        cid,
+      });
       res.json({
         success: true,
         message: "Invite accepted. You now have access to the document.",

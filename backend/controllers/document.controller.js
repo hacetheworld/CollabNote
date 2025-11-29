@@ -1,13 +1,20 @@
 import DocumentService from "../services/document.service.js";
+import { logger } from "../utils/winstonLogger.js";
 
 class DocumentController {
   // CREATE NEW DOCUMENT
   static async createDocument(req, res, next) {
     try {
+      const cid = req.cid;
       const userId = req.userId;
       const { title } = req.body;
 
-      const doc = await DocumentService.createDocument(userId, title);
+      const doc = await DocumentService.createDocument(userId, title, cid);
+      logger.info({
+        message: "createDocument response sent successfully.",
+        docId: doc._id,
+        cid,
+      });
       return res.status(201).json({ success: true, document: doc });
     } catch (error) {
       next(error);
@@ -17,9 +24,13 @@ class DocumentController {
   // GET ALL DOCUMENTS (OWNED + COLLABORATIONS)
   static async getUserDocuments(req, res, next) {
     try {
+      const cid = req.cid;
       const userId = req.userId;
-      const docs = await DocumentService.getUserDocuments(userId);
-      console.log(docs, "docs..");
+      const docs = await DocumentService.getUserDocuments(userId, cid);
+      logger.info({
+        message: "getUserDocuments response sent successfully.",
+        cid,
+      });
 
       res.json({ success: true, documents: docs });
     } catch (error) {
@@ -30,27 +41,18 @@ class DocumentController {
   // GET A SINGLE DOCUMENT WITH PERMISSION CHECK
   static async getDocumentById(req, res, next) {
     try {
+      const cid = req.cid;
       const docId = req.params.id;
       const userId = req.userId;
 
-      const doc = await DocumentService.getDocumentById(docId, userId);
-      let permission = "viewer";
+      const doc = await DocumentService.getDocumentById(docId, userId, cid);
+      logger.info({
+        message: "getDocumentById response sent successfully.",
+        docId: docId,
+        cid,
+      });
 
-      // Owner always editor
-      if (doc.ownerId.toString() === userId.toString()) {
-        permission = "editor";
-      }
-      // Check collaborators
-      else {
-        const collab = doc.collaborators.find(
-          (c) => c.userId.toString() === userId.toString()
-        );
-
-        if (collab) {
-          permission = collab.role; // viewer or editor
-        }
-      }
-      res.json({ permission, success: true, document: doc });
+      res.json({ success: true, document: doc });
     } catch (error) {
       next(error);
     }
@@ -58,28 +60,19 @@ class DocumentController {
 
   static async deleteDocumentById(req, res, next) {
     try {
+      const cid = req.cid;
       const docId = req.params.id;
       const userId = req.userId;
 
-      await DocumentService.deleteDocument(docId, userId);
-
+      await DocumentService.deleteDocument(docId, userId, cid);
+      logger.info({
+        message: "deleteDocument response sent successfully.",
+        docId: docId,
+        cid,
+      });
       res.status(200).json({
         message: "Document deleted successfully.",
       });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  // APPEND DELTA UPDATE
-  static async appendDelta(req, res, next) {
-    try {
-      const docId = req.params.id;
-      const { delta } = req.body;
-
-      const updated = await DocumentService.appendDelta(docId, delta);
-
-      res.json({ success: true, document: updated });
     } catch (error) {
       next(error);
     }

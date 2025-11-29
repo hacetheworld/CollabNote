@@ -1,14 +1,22 @@
 import { authService } from "../services/auth.service.js";
+import { logger } from "../utils/winstonLogger.js";
 
 export const authController = {
-  signup: async (req, res) => {
+  signup: async (req, res, next) => {
     try {
-      const data = await authService.signup(req.body);
+      const cid = req.cid; // Get the Correlation ID
+
+      const data = await authService.signup(req.body, cid);
 
       res.cookie("refreshToken", data.refreshToken, {
         httpOnly: true,
         secure: false,
         sameSite: "lax",
+      });
+      logger.info({
+        message: "Signup response sent successfully.",
+        userId: data.user._id,
+        cid,
       });
 
       return res.json({
@@ -17,13 +25,15 @@ export const authController = {
         user: data.user,
       });
     } catch (err) {
-      res.status(400).json({ error: err.message });
+      next(err);
     }
   },
 
-  login: async (req, res) => {
+  login: async (req, res, next) => {
     try {
-      const data = await authService.login(req.body);
+      const cid = req.cid; // Get the Correlation ID
+
+      const data = await authService.login(req.body, cid);
 
       res.cookie("refreshToken", data.refreshToken, {
         httpOnly: true,
@@ -31,57 +41,76 @@ export const authController = {
         sameSite: "None",
       });
 
+      logger.info({
+        message: "Login response sent successfully.",
+        userId: data.user._id,
+        cid,
+      });
       return res.json({
         message: "Login successful",
         accessToken: data.accessToken,
         user: data.user,
       });
     } catch (err) {
-      res.status(400).json({ error: err.message });
+      next(err);
     }
   },
-  me: async (req, res) => {
+  me: async (req, res, next) => {
     try {
+      const cid = req.cid;
+
       const userId = req.userId;
-      const user = await authService.getUserProfile(userId);
+      const user = await authService.getUserProfile(userId, cid);
 
       if (!user) {
         // Should technically not happen if token is valid, but good practice
-        return res.status(404).json({ error: "User not found" });
+        throw new NotFoundError("User profile linked to token not found.");
       }
+      logger.info({
+        message: "User profile fetched and response sent.",
+        userId,
+        cid,
+      });
 
       // Return the necessary user data
       return res.json({ user });
     } catch (err) {
-      // Log the error for monitoring/debugging purposes
-      console.error("Error fetching user profile:", err.message);
-      res.status(500).json({ error: "Internal server error" });
+      next(err);
     }
   },
-  refresh: async (req, res) => {
+  refresh: async (req, res, next) => {
     try {
+      const cid = req.cid;
+
       console.log(req.cookies, "req.cookiesreq.cookies");
       const { refreshToken } = req.cookies;
 
-      const data = await authService.refresh(refreshToken);
+      const data = await authService.refresh(refreshToken, cid);
+      logger.info({ message: "Token refresh response sent.", cid });
 
       res.json({ accessToken: data.accessToken });
     } catch (err) {
-      console.log(err, "errroo refresh");
-
-      res.status(401).json({ error: err.message });
+      next(err);
     }
   },
 
-  logout: async (req, res) => {
+  logout: async (req, res, next) => {
     try {
+      const cid = req.cid;
+
       const userId = req.user.id;
-      await authService.logout(userId);
+      await authService.logout(userId, cid);
 
       res.clearCookie("refreshToken");
+      logger.info({
+        message: "Logout successful and response sent.",
+        userId,
+        cid,
+      });
+
       res.json({ message: "Logged out" });
     } catch (err) {
-      res.status(400).json({ error: err.message });
+      next(err);
     }
   },
 };

@@ -1,32 +1,47 @@
 // services/document.service.js
 import Document from "../models/Document.model.js";
 import { getShareDB } from "../sharedb/sharedb.js";
+import { ForbiddenError, NotFoundError } from "../utils/appError.js";
+import { logger } from "../utils/winstonLogger.js";
 
 class DocumentService {
   // CREATE DOCUMENT
-  static async createDocument(ownerId, title = "Untitled Document") {
+  static async createDocument(ownerId, title = "Untitled Document", cid) {
+    logger.info({ message: "Attempting document creation...", cid });
+
     const doc = await Document.create({
       ownerId,
       title,
       snapshot: "this is empty doc",
     });
 
+    logger.info({
+      message: "Document SuccessFully Created...",
+      doc: doc._id,
+      cid,
+    });
     return doc;
   }
 
   // GET ALL DOCUMENTS FOR A USER
-  static async getUserDocuments(userId) {
+  static async getUserDocuments(userId, cid) {
+    logger.info({ message: "Attempting to get documents ...", cid });
     const docs = await Document.find({
       $or: [{ ownerId: userId }, { "collaborators.userId": userId }],
     }).sort({ updatedAt: -1 });
-
+    logger.info({
+      message: "SuccessFully got the documents.",
+      cid,
+    });
     return docs;
   }
 
   // FETCH A DOCUMENT WITH PERMISSION CHECK
-  static async getDocumentById(docId, userId) {
+  static async getDocumentById(docId, userId, cid) {
+    logger.info({ message: "Attempting to get document by docId ...", cid });
+
     const doc = await Document.findById(docId);
-    if (!doc) throw new Error("Document not found");
+    if (!doc) throw new NotFoundError("Document not found");
 
     // OWNER → full access
     if (doc.ownerId.toString() === userId.toString()) return doc;
@@ -35,14 +50,38 @@ class DocumentService {
     const isCollaborator = doc.collaborators.some(
       (c) => c.userId.toString() === userId.toString()
     );
-    if (isCollaborator) return doc;
+    let permission = "viewer";
 
+    // Owner always editor
+    if (doc.ownerId.toString() === userId.toString()) {
+      permission = "editor";
+    }
+    // Check collaborators
+    else {
+      const collab = doc.collaborators.find(
+        (c) => c.userId.toString() === userId.toString()
+      );
+
+      if (collab) {
+        permission = collab.role; // viewer or editor
+      }
+    }
+    if (isCollaborator) {
+      logger.info({
+        message: "SuccessFully got the document",
+        cid,
+      });
+      return { success: true, permission, doc };
+    }
     // OTHERWISE → denied
-    throw new Error("Forbidden: You do not have access to this document");
+    throw new ForbiddenError(
+      "Forbidden: You do not have access to this document"
+    );
   }
   // Assuming this is in your document service file (e.g., document.service.js)
 
-  static async deleteDocument(docId, userId) {
+  static async deleteDocument(docId, userId, cid) {
+    logger.info({ message: "Attempting to delete the document ...", cid });
     // 1. Find the document and ensure the requesting user is the owner
     const doc = await Document.findOne({
       _id: docId,
@@ -50,7 +89,7 @@ class DocumentService {
     });
 
     if (!doc) {
-      throw new Error(
+      throw new ForbiddenError(
         "Forbidden: Document not found or you do not have permission to delete it."
       );
     }
@@ -88,30 +127,33 @@ class DocumentService {
     });
 
     await shareDBCleanupPromise;
+    logger.info({
+      message: "SuccessFully deleted the documents.",
+      cid,
+    });
     return { message: "Document successfully deleted." };
   }
-  // UPDATE DELTA OPERATIONS (APPEND)
-  static async appendDelta(docId, deltaOps) {
-    const doc = await Document.findById(docId);
-    if (!doc) throw new Error("Document not found");
 
-    doc.delta.push(...deltaOps);
-    await doc.save();
-
-    return doc;
-  }
-  static async updateSnapshot(docId, htmlContent) {
+  static async updateSnapshot(docId, htmlContent, cid) {
+    logger.info({ message: "Attempting to update the document ...", cid });
     const doc = await Document.findById(docId);
-    if (!doc) throw new Error("Document not found");
+    if (!doc) throw new NotFoundError("Document not found");
 
     doc.snapshot = htmlContent;
     await doc.save();
+    logger.info({ message: "SuccessFully updated the document", cid });
+
     return doc;
   }
   // ADD COLLABORATOR
   static async addCollaborator(docId, userId, role = "editor") {
+    logger.info({
+      message: "Attempting to Added the collaborator to the document",
+      cid,
+    });
+
     const doc = await Document.findById(docId);
-    if (!doc) throw new Error("Document not found");
+    if (!doc) throw new NotFoundError("Document not found");
 
     // prevent duplicates
     const already = doc.collaborators.some(
@@ -121,63 +163,12 @@ class DocumentService {
 
     doc.collaborators.push({ userId, role });
     await doc.save();
+    logger.info({
+      message: "SuccessFully Added the collaborator to the document",
+      cid,
+    });
 
     return doc;
-  }
-
-  static async verifyAccess(docId, userId) {
-    try {
-      const doc = await Document.findById(docId).select(
-        "ownerId collaborators"
-      );
-      if (!doc) return false;
-
-      // owner has access
-      if (doc.ownerId && doc.ownerId.toString() === userId.toString())
-        return true;
-
-      // collaborator (any role) has access
-      const isCollaborator = doc.collaborators.some(
-        (c) => c.userId.toString() === userId.toString()
-      );
-      if (isCollaborator) return true;
-
-      // otherwise no access
-      return false;
-    } catch (err) {
-      console.error("DocumentService.verifyAccess error:", err);
-      return false;
-    }
-  }
-
-  /* -------------------------
-     New: canEdit(docId, userId)
-     Returns true if user can send edits (owner OR collaborator.role === 'editor')
-     Returns false for viewers or non-collaborators
-     ------------------------- */
-  static async canEdit(docId, userId) {
-    try {
-      const doc = await Document.findById(docId).select(
-        "ownerId collaborators"
-      );
-      if (!doc) return false;
-
-      // owner can always edit
-      if (doc.ownerId && doc.ownerId.toString() === userId.toString())
-        return true;
-
-      // collaborator with editor role can edit
-      const editor = doc.collaborators.find(
-        (c) => c.userId.toString() === userId.toString() && c.role === "editor"
-      );
-      if (editor) return true;
-
-      // otherwise (viewer or not present) cannot edit
-      return false;
-    } catch (err) {
-      console.error("DocumentService.canEdit error:", err);
-      return false;
-    }
   }
 }
 

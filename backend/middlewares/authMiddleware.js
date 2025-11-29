@@ -1,6 +1,7 @@
 // --- src/middleware/authMiddleware.js ---
 import jwt from "jsonwebtoken";
 import Document from "../models/Document.model.js";
+import { AuthenticationError } from "../utils/appError.js";
 
 export const authenticateToken = (req, res, next) => {
   // 1. Extract Token from "Bearer <token>" header
@@ -8,19 +9,17 @@ export const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) {
     // 401: Unauthorized - No token provided
-    return res.sendStatus(401);
+    throw new AuthenticationError();
   }
 
   // 2. Verify the Token
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, userPayload) => {
     if (err) {
       // 403: Forbidden - Token is invalid, expired, or tampered with
-      return res.sendStatus(401);
+      throw new AuthenticationError();
     }
     // 3. Attach User ID to Request
     // We trust the token payload, which contains the userId.
-    console.log(userPayload);
-
     req.userId = userPayload.id;
 
     next(); // Move to the next function (the controller)

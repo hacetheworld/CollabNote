@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 dotenv.config();
-
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
@@ -35,6 +34,7 @@ app.use(requestLogger);
 
 // Routes
 app.get("/", (req, res) => res.send("API is running..."));
+app.get("/health", (req, res) => res.send("Health is Goodddddddd"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
