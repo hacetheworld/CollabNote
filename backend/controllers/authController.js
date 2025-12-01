@@ -15,7 +15,6 @@ export const authController = {
       });
       logger.info({
         message: "Signup response sent successfully.",
-        userId: data.user._id,
         cid,
       });
 
@@ -68,7 +67,6 @@ export const authController = {
       }
       logger.info({
         message: "User profile fetched and response sent.",
-        userId,
         cid,
       });
 

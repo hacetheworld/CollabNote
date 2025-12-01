@@ -17,7 +17,6 @@ class DocumentService {
 
     logger.info({
       message: "Document SuccessFully Created...",
-      doc: doc._id,
       cid,
     });
     return doc;
@@ -116,13 +115,10 @@ class DocumentService {
         }
 
         // Delete the document data and oplog
-        docToDelete.del(
-          { source: "serverDelete", user: { id: userId } },
-          (err) => {
-            if (err) return reject(err);
-            resolve();
-          }
-        );
+        docToDelete.del({}, (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
       });
     });
 
@@ -146,7 +142,7 @@ class DocumentService {
     return doc;
   }
   // ADD COLLABORATOR
-  static async addCollaborator(docId, userId, role = "editor") {
+  static async addCollaborator(docId, userId, role = "editor", cid) {
     logger.info({
       message: "Attempting to Added the collaborator to the document",
       cid,

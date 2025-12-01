@@ -29,17 +29,11 @@ export const authenticateToken = (req, res, next) => {
 export function registerShareDBPermissionMiddleware(backend) {
   backend.use("submit", async (request, callback) => {
     try {
-      if (request.op && request.op.user && request.op.user.id) {
-        // If user context is provided in the operation data,
-        // the operation can be considered safe or authorized by the calling service.
-        // We can explicitly attach the user to the agent for downstream checks:
-        request.agent.user = request.op.user;
-        // Alternatively, if the server is performing a trusted delete, just let it pass:
-        // if (request.op.del && request.op.source === "serverDelete")
-        //   return done();
-
-        // For now, let's proceed to the next check, as the user is attached.
+      if (request.op.del) {
+        return callback();
       }
+      //   // For now, let's proceed to the next check, as the user is attached.
+      // }
       const { agent, collection, id } = request;
       // console.log(request, "registerShareDBPermissionMiddleware");
 

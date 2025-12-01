@@ -12,7 +12,6 @@ class DocumentController {
       const doc = await DocumentService.createDocument(userId, title, cid);
       logger.info({
         message: "createDocument response sent successfully.",
-        docId: doc._id,
         cid,
       });
       return res.status(201).json({ success: true, document: doc });
@@ -67,7 +66,6 @@ class DocumentController {
       await DocumentService.deleteDocument(docId, userId, cid);
       logger.info({
         message: "deleteDocument response sent successfully.",
-        docId: docId,
         cid,
       });
       res.status(200).json({

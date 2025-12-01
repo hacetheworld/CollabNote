@@ -44,12 +44,14 @@ export async function initializeShareDBBackend() {
   backend.use("afterWrite", async (request, done) => {
     try {
       if (request.collection !== "documents") return done();
-
+      if (!request.snapshot || !request.snapshot.data) {
+        return done();
+      }
       const docId = request.id;
       const delta = request.snapshot.data;
 
       const htmlContent = convertDeltaToHTML(delta);
-      await DocumentService.updateSnapshot(docId, htmlContent);
+      await DocumentService.updateSnapshot(docId, htmlContent, request.cid);
 
       done();
     } catch (err) {
@@ -100,7 +102,8 @@ export function startShareDBServer(server) {
       console.log(user, "user the ws...");
 
       const stream = new WebSocketJSONStream(ws);
-      backend.listen(stream);
+      const agent = backend.listen(stream);
+      agent.custom = { userId: user.id, role: "user" };
     } catch (err) {
       console.error("WS Auth Failed:", err);
       ws.close();

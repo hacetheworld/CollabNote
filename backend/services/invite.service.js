@@ -52,7 +52,12 @@ class InviteService {
     }
 
     // ADD COLLABORATOR TO DOC
-    await DocumentService.addCollaborator(invite.documentId, userId, "editor");
+    await DocumentService.addCollaborator(
+      invite.documentId,
+      userId,
+      "editor",
+      cid
+    );
 
     // MARK AS ACCEPTED
     invite.status = "accepted";

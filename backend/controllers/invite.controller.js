@@ -18,14 +18,13 @@ class InviteController {
       );
       logger.info({
         message: "User profile fetched and response sent.",
-        inviterUserId,
         cid,
       });
 
       res.status(201).json({
         success: true,
         message: "Invite created successfully",
-        inviteLink: `http://localhost:5173/invite/accept/${invite.token}`,
+        inviteLink: `http://localhost:3000/invite/accept/${invite.token}`,
       });
     } catch (error) {
       next(error);
@@ -33,7 +32,7 @@ class InviteController {
   }
 
   // ACCEPT INVITE
-  static async acceptInvite(req, res, next, cid) {
+  static async acceptInvite(req, res, next) {
     try {
       const cid = req.cid;
       const token = req.params.token;
@@ -42,7 +41,6 @@ class InviteController {
       const invite = await InviteService.acceptInvite(token, userId, cid);
       logger.info({
         message: "Accept Invite response sent.",
-        userId,
         cid,
       });
       res.json({
@@ -51,6 +49,8 @@ class InviteController {
         invite,
       });
     } catch (error) {
+      console.log("yesssssssss i ran ", error.message);
+
       next(error);
     }
   }
