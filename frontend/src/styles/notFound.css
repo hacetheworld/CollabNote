@@ -1,0 +1,76 @@
+/* In styles/notFound.css */
+
+.not-found-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between; /* Push footer to the bottom */
+  min-height: 100vh;
+  background-color: #f8f9fa; /* Light grey background */
+  font-family: "Inter", sans-serif;
+  padding-top: 50px;
+}
+
+.not-found-content {
+  text-align: center;
+  max-width: 600px;
+  padding: 20px;
+  margin-bottom: auto; /* Push content up */
+}
+
+.error-code {
+  font-size: 8rem; /* Large, noticeable font size */
+  font-weight: 900;
+  color: #004e64; /* Deep Teal branding color */
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.error-headline {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #3c4043;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  color: #5f6368;
+  margin-bottom: 30px;
+}
+
+.error-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.home-link {
+  text-decoration: none;
+  font-weight: 600;
+  color: white;
+  background-color: #00a7e1; /* Vibrant Cyan/Blue CTA */
+  padding: 10px 20px;
+  border-radius: 20px;
+  transition: background-color 0.2s;
+}
+
+.home-link:hover {
+  background-color: #008cc3;
+}
+
+.divider {
+  color: #dadce0;
+}
+
+.report-link {
+  font-weight: 500;
+  color: #004e64;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.report-link:hover {
+  color: #00a7e1;
+}

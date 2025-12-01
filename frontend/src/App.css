@@ -1,0 +1,9 @@
+.navlink {
+  /* NavLink styling */
+  font-size: 20px;
+  color: #007bff; /* Color the link */
+  text-decoration: none; /* Remove default underline */
+  padding: 5px 0; /* Add some padding for the border */
+  border-bottom: 2px solid lightgray; /* Subtle bottom border */
+  transition: border-color 0.3s ease; /* Smooth transition for hover */
+}
