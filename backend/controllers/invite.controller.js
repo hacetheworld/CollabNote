@@ -24,7 +24,7 @@ class InviteController {
       res.status(201).json({
         success: true,
         message: "Invite created successfully",
-        inviteLink: `http://localhost:3000/invite/accept/${invite.token}`,
+        inviteLink: `${process.env.inviteUrl}/invite/accept/${invite.token}`,
       });
     } catch (error) {
       next(error);

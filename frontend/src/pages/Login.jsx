@@ -44,9 +44,10 @@ export default function Login() {
         <button type="submit">Login</button>
       </form>
 
-      <a href="http://localhost:5000/api/auth/google">
+      <a href={`${import.meta.env.VITE_API_URL}/auth/google`}>
         <button>Login with Google</button>
       </a>
+
       <NavLink to="/signup">Signup</NavLink>
     </div>
   );
